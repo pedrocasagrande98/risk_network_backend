@@ -1,0 +1,23 @@
+info:
+  name: testetweetpost
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/tweets/
+  body:
+    type: json
+    data: |
+      {
+        "content": "Meu Segundo tweet pelo Bruno! Funcionou!"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg1MDE3MTY3LCJpYXQiOjE3ODUwMTY4NjcsImp0aSI6ImMxZGMzZWUyZTMwMzQ2NTM5YzUxNTdmNzgzOTllOGJmIiwidXNlcl9pZCI6IjEifQ.kUYC5dJWKlK4rQVIzEka87fxy5IhTzp5DuJlikJvE9c
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
