@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('users.urls')),
     path('api/tweets/', include('tweets.urls')),
+    path('api/georisk/', include('georisk.urls')),
 ]
 
 if settings.DEBUG:

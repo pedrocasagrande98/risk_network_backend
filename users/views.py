@@ -32,3 +32,8 @@ class FollowUserView(APIView):
         else:
             request.user.following.add(user_to_follow)
             return Response({'message': f'You followed {user_to_follow.username}'}, status=status.HTTP_200_OK)
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
