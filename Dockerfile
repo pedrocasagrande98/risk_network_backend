@@ -19,7 +19,7 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app/
 
-RUN poetry install --no-interaction --no-ansi
+RUN poetry install --no-interaction --no-ansi --no-root
 
 EXPOSE 8000
 
