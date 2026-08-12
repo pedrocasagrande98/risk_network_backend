@@ -19,8 +19,6 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app/
 
-RUN poetry install --no-interaction --no-ansi --no-root
-
 EXPOSE 8000
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
