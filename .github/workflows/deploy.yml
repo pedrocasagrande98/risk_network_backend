@@ -1,0 +1,36 @@
+name: Deploy to Hostinger VPS
+
+on:
+  push:
+    branches:
+      - main # O deploy acontecerá sempre que houver push na main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            # Entra na pasta do projeto
+            cd /root/risk_network_backend
+            
+            # Garante que não há conflitos locais
+            git reset --hard
+            
+            # Puxa o código novo (como essa action)
+            git pull origin main
+            
+            # Reconstrói a imagem Docker e sobe todos os containers (Web, Redis, Celery)
+            docker compose up -d --build
+            
+            # Aplica novas migrações automaticamente
+            docker exec risk_network_backend-web-1 python manage.py migrate
