@@ -39,6 +39,8 @@ CORS_ALLOWED_ORIGINS = [
 
 # Application definition
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
