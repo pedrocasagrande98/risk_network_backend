@@ -6,5 +6,5 @@ class GeoEventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GeoEvent
-        fields = ['id', 'user', 'username', 'type', 'severity', 'description', 'latitude', 'longitude', 'created_at']
+        fields = ['id', 'user', 'username', 'type', 'severity', 'description', 'latitude', 'longitude', 'event_date', 'created_at']
         read_only_fields = ['user']

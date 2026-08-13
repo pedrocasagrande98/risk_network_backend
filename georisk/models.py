@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 class GeoEvent(models.Model):
     TYPE_CHOICES = [
@@ -22,6 +23,7 @@ class GeoEvent(models.Model):
     description = models.TextField(blank=True, null=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    event_date = models.DateField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
