@@ -1,17 +1,20 @@
 from celery import shared_task
-import time
+from .models import GeoEvent
+from .processors import EventProcessorFactory
 
 @shared_task
 def process_new_geoevent(event_id):
     """
-    Task de exemplo simulando o processamento assíncrono de um novo evento de risco.
-    Na vida real, isso poderia enviar um email, gerar um relatório, etc.
+    Task Orquestradora que seleciona a estratégia correta baseada no tipo de evento.
     """
-    print(f"[Worker] Iniciando processamento do evento de risco {event_id}...")
-    
-    # Simula um trabalho pesado que demoraria 5 segundos (travando a requisição web se fosse síncrono)
-    time.sleep(5)
-    
-    print(f"[Worker] Evento {event_id} processado com sucesso! Notificações enviadas.")
-    
-    return f"Processed event {event_id}"
+    try:
+        event = GeoEvent.objects.get(id=event_id)
+        print(f"[Orquestrador] Iniciando processamento do evento {event_id} ({event.type}) na coord ({event.latitude}, {event.longitude})")
+        
+        processor = EventProcessorFactory.get_processor(event)
+        return processor.process()
+
+    except Exception as e:
+        print(f"[Orquestrador] ERRO fatal no evento {event_id}: {str(e)}")
+        GeoEvent.objects.filter(id=event_id).update(status='ERROR')
+        return str(e)

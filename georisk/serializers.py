@@ -3,11 +3,12 @@ from .models import GeoEvent
 
 class GeoEventSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    user_avatar = serializers.ImageField(source='user.avatar', read_only=True)
 
     class Meta:
         model = GeoEvent
-        fields = ['id', 'user', 'username', 'type', 'severity', 'description', 'latitude', 'longitude', 'event_date', 'created_at']
-        read_only_fields = ['user']
+        fields = ['id', 'user', 'username', 'user_avatar', 'type', 'severity', 'description', 'latitude', 'longitude', 'event_date', 'created_at', 'status', 'flood_geojson', 'streets_geojson']
+        read_only_fields = ['user', 'status', 'flood_geojson', 'streets_geojson']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
