@@ -1,26 +1,75 @@
+# ===================== #
+# Segredos & credenciais #
+# ===================== #
 .env
+.env.*
+!.env.example
+*.env
+service_account*.json
+service_account*.p12
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*credential*.json
+token*.json
+client_secret*.json
+oauth*.json
+
+# ===================== #
+# Banco de dados
+# ===================== #
+db.sqlite3
+*.sqlite3
+*.sqlite
+*.db
+db/
+
+# ===================== #
+# Python / venv
+# ===================== #
 .venv/
 venv/
 env/
-
-db.sqlite3
-*.sqlite3
-*.db
-
+ENV/
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+*.egg-info/
+.eggs/
+build/
+!.github/build.sh
+dist/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
+# ===================== #
+# Django
+# ===================== #
 media/
+staticfiles/
+*.log
+local_settings.py
 
+# ===================== #
+# Celery
+# ===================== #
+celerybeat-schedule
+celerybeat.pid
+
+# ===================== #
+# IDEs / Sistema
+# ===================== #
 .idea/
 .vscode/
 *.iml
 *.swp
 .DS_Store
 Thumbs.db
-
-*.log
-local_settings.py
+*.sw?

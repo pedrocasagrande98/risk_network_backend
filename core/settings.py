@@ -157,6 +157,18 @@ REST_FRAMEWORK = {
     ),
 }
 
+# SimpleJWT — default do pacote é access 5 min (causava 401 constante no front).
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    # Cada refresh devolve um novo refresh token (sliding window)
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,  # app blacklist não está instalado
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
 import os
 if os.environ.get('CLOUDINARY_URL'):
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
