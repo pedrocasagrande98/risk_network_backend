@@ -44,9 +44,13 @@ class StormProxyView(APIView):
 
     def post(self, request, *args, **kwargs):
         payload = request.data
-        # URL do serviço de vento: env em produção (http://storm:8005 na rede
-        # Docker), fallback localhost p/ dev local (storm standalone na máquina).
-        storm_url = os.environ.get('STORM_SERVICE_URL', 'http://localhost:8005/api/wind/plot')
+        # URL BASE do serviço de vento: env em produção (http://storm:8005 na
+        # rede Docker), fallback localhost p/ dev local (storm standalone).
+        # O caminho do endpoint (/api/wind/plot) é sempre anexado aqui — a env
+        # deve conter apenas a base; se vier com o caminho completo, é respeitada.
+        storm_base = os.environ.get('STORM_SERVICE_URL', 'http://localhost:8005').rstrip('/')
+        wind_path = '/api/wind/plot'
+        storm_url = storm_base if storm_base.endswith(wind_path) else storm_base + wind_path
         try:
             req = urllib.request.Request(
                 storm_url,
