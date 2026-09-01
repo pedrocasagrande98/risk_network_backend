@@ -17,6 +17,10 @@ COPY pyproject.toml poetry.lock* /app/
 RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi --no-root
 
+# GEE: pacote usado em runtime (gee_client.py) mas ausente do pyproject —
+# instalar direto na imagem p/ sobreviver a recriações de container.
+RUN pip install --no-cache-dir earthengine-api
+
 COPY . /app/
 
 EXPOSE 8000

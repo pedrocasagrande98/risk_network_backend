@@ -34,6 +34,7 @@ class GeoEventRetrieveView(generics.RetrieveAPIView):
 
 import urllib.request
 import json
+import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -43,9 +44,12 @@ class StormProxyView(APIView):
 
     def post(self, request, *args, **kwargs):
         payload = request.data
+        # URL do serviço de vento: env em produção (http://storm:8005 na rede
+        # Docker), fallback localhost p/ dev local (storm standalone na máquina).
+        storm_url = os.environ.get('STORM_SERVICE_URL', 'http://localhost:8005/api/wind/plot')
         try:
             req = urllib.request.Request(
-                'http://localhost:8005/api/wind/plot',
+                storm_url,
                 data=json.dumps(payload).encode('utf-8'),
                 headers={'Content-Type': 'application/json'},
                 method='POST'
