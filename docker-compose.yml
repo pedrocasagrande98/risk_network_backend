@@ -11,6 +11,7 @@ services:
     depends_on:
       - db
       - redis
+    restart: unless-stopped
 
   celery_worker:
     build: .
@@ -22,11 +23,13 @@ services:
     depends_on:
       - db
       - redis
+    restart: unless-stopped
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    restart: unless-stopped
 
   db:
     image: postgres:15
@@ -36,6 +39,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-risk_network_db}
       - POSTGRES_USER=${POSTGRES_USER:-risk_user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-risk_password}
+    restart: unless-stopped
 
   storm:
     build: ./storm
