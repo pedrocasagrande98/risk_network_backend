@@ -57,4 +57,6 @@ jobs:
             docker compose exec -T web python manage.py migrate --noinput
 
             # Validação: rotas carregadas (falha aqui = job vermelho)
-            docker compose exec -T web python -c "from georisk.urls import urlpatterns as u; print(len(u), 'rotas georisk OK')"
+            # manage.py shell -c configura DJANGO_SETTINGS_MODULE automaticamente
+            # (python -c puro não configura e quebra com ImproperlyConfigured)
+            docker compose exec -T web python manage.py shell -c "from georisk.urls import urlpatterns as u; print(len(u), 'rotas georisk OK')"
