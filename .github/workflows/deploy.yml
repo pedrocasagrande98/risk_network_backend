@@ -11,26 +11,50 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true # qualquer comando com erro → job vermelho (não verde mentiroso)
           script: |
-            # Entra na pasta do projeto
+            set -e
             cd /root/risk_network_backend
-            
+
             # Garante que não há conflitos locais
             git reset --hard
-            
-            # Puxa o código novo (como essa action)
-            git pull origin main
-            
-            # Reconstrói a imagem Docker e sobe todos os containers (Web, Redis, Celery)
+
+            # Puxa o código novo — com retry (3 tentativas)
+            PULL_OK=0
+            for i in 1 2 3; do
+              if git pull origin main; then
+                PULL_OK=1
+                break
+              fi
+              echo "::warning::git pull falhou (tentativa $i/3) — retry em 10s"
+              sleep 10
+            done
+
+            if [ "$PULL_OK" != "1" ]; then
+              echo "::error::git pull falhou 3x — ABORTANDO deploy (código velho NÃO será rebuildado)"
+              exit 1
+            fi
+
+            # Sanity: mostra qual commit subiu
+            echo "Deploy do commit: $(git log --oneline -1)"
+
+            # Reconstrói a imagem Docker e sobe todos os containers (Web, Redis, Celery, Storm)
             docker compose up -d --build
-            
+
+            # Aguarda containers subirem antes de migrar
+            sleep 10
+            docker compose ps
+
             # Aplica novas migrações automaticamente
-            docker exec risk_network_backend-web-1 python manage.py migrate
+            docker compose exec -T web python manage.py migrate --noinput
+
+            # Validação: rotas carregadas (falha aqui = job vermelho)
+            docker compose exec -T web python -c "from georisk.urls import urlpatterns as u; print(len(u), 'rotas georisk OK')"

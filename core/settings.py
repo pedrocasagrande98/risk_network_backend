@@ -25,15 +25,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-3fho8w7y8$hn5kcy%!4hyeh3a0)ux^m@q$s%eo&2$zgsh+_+xg"
+# Em produção: gerar NOVO via `python -c "import secrets;print(secrets.token_urlsafe(64))"`
+# e definir no .env da VPS (o valor abaixo é fallback de dev e já foi commitado historicamente).
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    "django-insecure-3fho8w7y8$hn5kcy%!4hyeh3a0)ux^m@q$s%eo&2$zgsh+_+xg",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ['*'] # Recomendado alterar para o domínio do Render após o deploy
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    if h.strip()
+]
+
+# CORS: origens lidas do env em produção; fallback dev mantém o local
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    o.strip()
+    for o in os.environ.get(
+        'CORS_ALLOWED_ORIGINS',
+        'http://localhost:5173,http://127.0.0.1:5173',
+    ).split(',')
+    if o.strip()
 ]
 
 
@@ -146,7 +161,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 AUTH_USER_MODEL = 'users.User'
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Só ligar em dev/debug; em produção use CORS_ALLOWED_ORIGINS no .env
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL', 'False').lower() in ('1', 'true', 'yes')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
