@@ -158,10 +158,24 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+try:
+    import os
+    os.makedirs(MEDIA_ROOT / "avatars", exist_ok=True)
+except Exception:
+    pass
+
+_raw_cloudinary = os.environ.get("CLOUDINARY_URL", "").strip()
+_use_cloudinary = bool(
+    _raw_cloudinary
+    and _raw_cloudinary.startswith("cloudinary://")
+    and "<" not in _raw_cloudinary
+    and "sua_url" not in _raw_cloudinary
+)
+
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"
-        if os.environ.get("CLOUDINARY_URL")
+        if _use_cloudinary
         else "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
