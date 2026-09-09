@@ -47,6 +47,20 @@ class UserSerializer(serializers.ModelSerializer):
     def get_following_list(self, obj):
         return obj.following.values('id', 'username')
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if instance.avatar:
+            try:
+                url = instance.avatar.url
+                request = self.context.get('request')
+                if request and not url.startswith(('http://', 'https://')):
+                    ret['avatar'] = request.build_absolute_uri(url)
+                else:
+                    ret['avatar'] = url
+            except Exception:
+                ret['avatar'] = None
+        return ret
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
