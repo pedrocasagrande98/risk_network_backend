@@ -12,9 +12,11 @@ class BaseEventProcessor(ABC):
         """Processes the event and updates its status/data"""
         pass
 
+import os
+
 class FloodEventProcessor(BaseEventProcessor):
-    WTH_URL = "http://127.0.0.1:8001/api/v1/flood"
-    OSMNX_URL = "http://127.0.0.1:8002/api/v1/streets"
+    WTH_URL = os.environ.get("WTH_SERVICE_URL", "http://127.0.0.1:8001").rstrip('/') + "/api/v1/flood"
+    OSMNX_URL = os.environ.get("OSMNX_SERVICE_URL", "http://127.0.0.1:8002").rstrip('/') + "/api/v1/streets"
 
     def process(self):
         event_id = self.event.id

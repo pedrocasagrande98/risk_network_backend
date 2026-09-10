@@ -1,4 +1,4 @@
-# Architecture
+git add .# Architecture
 
 This document describes how Risk Network is organized: the stack, the apps, the data model, and the request flows that hold the system together.
 
